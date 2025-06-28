@@ -171,10 +171,11 @@
     <p>&copy; 2025 CONVERGYX. All rights reserved.</p>
   </footer>
 
-  <!-- Firebase Auth -->
+  <!-- Firebase Auth + Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBIgnKZn4rznvJimZDDJxB2rFCOxKZN4iQ",
@@ -188,18 +189,32 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
 
-    window.signIn = () => {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          alert(`Welcome, ${user.displayName}!`);
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          console.error("Login failed", error);
-          alert("Login failed: " + error.message);
-        });
+    window.signIn = async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            name: user.displayName || "Unnamed",
+            email: user.email,
+            plan: "free",
+            leads: 0,
+            createdAt: new Date().toISOString()
+          });
+        }
+
+        alert(`Welcome, ${user.displayName}!`);
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        console.error("Login failed", error);
+        alert("Login failed: " + error.message);
+      }
     };
   </script>
 
