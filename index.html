@@ -110,7 +110,7 @@
   <section class="hero">
     <h2>Find 50 Free Leads Instantly</h2>
     <p>No credit card needed. Just click and start using your 50 free leads now.</p>
-    <button onclick="window.location.href='dashboard.html'">Try It Free</button>
+    <button onclick="signIn()">Try It Free</button>
   </section>
 
   <section class="section" id="features">
@@ -170,6 +170,38 @@
   <footer>
     <p>&copy; 2025 CONVERGYX. All rights reserved.</p>
   </footer>
+
+  <!-- Firebase Auth Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIgnKZn4rznvJimZDDJxB2rFCOxKZN4iQ",
+      authDomain: "convergyx-mvp.firebaseapp.com",
+      projectId: "convergyx-mvp",
+      storageBucket: "convergyx-mvp.firebasestorage.app",
+      messagingSenderId: "796952922966",
+      appId: "1:796952922966:web:00149d0af12559ae0724f7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    window.signIn = () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          alert(`Welcome, ${user.displayName}!`);
+          window.location.href = "dashboard.html";
+        })
+        .catch((error) => {
+          console.error("Login failed", error);
+          alert("Login failed: " + error.message);
+        });
+    };
+  </script>
 
 </body>
 </html>
