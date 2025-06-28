@@ -3,139 +3,155 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard | CONVERGYX</title>
+  <title>Dashboard - Convergyx</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      color: #333;
       margin: 0;
+      background: #f7f9fc;
     }
-
     header {
-      background: #007bff;
-      color: white;
-      padding: 20px;
+      background: #fff;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
-    .account-btn {
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 20px;
+    header h1 {
+      font-size: 1.5rem;
+    }
+    .account-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #ccc;
       cursor: pointer;
     }
-
-    .container {
-      padding: 30px;
-    }
-
-    h2 {
-      color: #007bff;
-    }
-
-    .card {
-      background: white;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .side-panel {
+    #sidebar {
       position: fixed;
       top: 0;
       right: -300px;
-      width: 280px;
+      width: 260px;
       height: 100%;
-      background: #fff;
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+      background: white;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
       padding: 20px;
-      transition: right 0.3s ease;
-      z-index: 1000;
+      transition: right 0.3s;
+      z-index: 999;
     }
-
-    .side-panel.open {
+    #sidebar.active {
       right: 0;
     }
-
-    .side-panel h3 {
-      margin-top: 0;
-      color: #007bff;
+    #sidebar h3 {
+      margin-bottom: 10px;
     }
-
-    .side-panel p {
-      margin: 10px 0;
+    .search-container {
+      text-align: center;
+      margin: 40px auto 20px;
     }
-
-    .side-panel .btn {
+    input[type="text"] {
+      width: 60%;
+      padding: 12px;
+      font-size: 16px;
+    }
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    .btn {
       display: block;
-      width: 100%;
-      margin-top: 10px;
-      padding: 10px;
+      margin: 20px auto;
+      padding: 12px 25px;
       background: #007bff;
       color: white;
       border: none;
-      border-radius: 4px;
+      font-size: 16px;
       cursor: pointer;
+      border-radius: 5px;
     }
-
-    .side-panel .logout {
-      background: #dc3545;
+    .progress-container {
+      margin-top: 15px;
     }
-
-    .side-panel .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      background: none;
-      border: none;
+    .progress-bar {
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      background: #28a745;
+      width: 0%;
+    }
+    .close-btn {
+      float: right;
+      cursor: pointer;
       font-size: 20px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Dashboard</h1>
-    <button class="account-btn" onclick="togglePanel()">👤</button>
+    <h1>CONVERGYX</h1>
+    <div class="account-icon" onclick="toggleSidebar()"></div>
   </header>
 
-  <div class="container">
-    <h2>Dashboard Features</h2>
-    <div class="card">
-      <p><strong>🔍 Search Leads:</strong> Instantly find verified leads based on roles, industries, and keywords.</p>
+  <div id="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">✖</span>
+    <h3 id="userName">User</h3>
+    <p id="userPlan">Plan: -</p>
+    <p>Leads used: <span id="leadsUsed">0</span></p>
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress" id="leadProgress"></div>
+      </div>
     </div>
-    <div class="card">
-      <p><strong>📄 Export to CSV/CRM:</strong> Download your leads and integrate directly into your workflow.</p>
-    </div>
-    <div class="card">
-      <p><strong>📬 Verified Emails:</strong> Each lead comes with verified contact info.</p>
-    </div>
-    <div class="card">
-      <p><strong>🚀 Upgrade Access:</strong> Upgrade to unlock 15,000+ leads monthly.</p>
-    </div>
+    <br>
+    <button class="btn" onclick="upgradePlan()">Upgrade Plan</button>
+    <button class="btn" onclick="signOut()">Sign Out</button>
   </div>
 
-  <!-- Slide-out User Panel -->
-  <div id="userPanel" class="side-panel">
-    <button class="close-btn" onclick="togglePanel()">×</button>
-    <h3>Account Info</h3>
-    <p><strong>Name:</strong> <span id="userName">Loading...</span></p>
-    <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
-    <p><strong>Plan:</strong> <span id="userPlan">Free Plan</span></p>
-    <button class="btn">Change Plan</button>
-    <button class="btn logout" onclick="logout()">Logout</button>
+  <div class="search-container">
+    <input type="text" id="leadSearch" placeholder="Search leads by industry, role, etc...">
   </div>
 
-  <!-- Firebase Auth Script -->
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Website</th>
+        <th>Decision Maker</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Verified</th>
+      </tr>
+    </thead>
+    <tbody id="leadsTable">
+      <!-- Leads will be injected here -->
+    </tbody>
+  </table>
+
+  <button class="btn">Export to CRM</button>
+
+  <!-- Firebase + Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBIgnKZn4rznvJimZDDJxB2rFCOxKZN4iQ",
@@ -148,29 +164,51 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("userName").textContent = user.displayName || "Anonymous";
-        document.getElementById("userEmail").textContent = user.email;
-        // Optional: You can extend this in future to dynamically show plan info
-      } else {
-        // If not logged in, redirect to main landing page
-        window.location.href = "index.html";
-      }
-    });
+    const sidebar = document.getElementById('sidebar');
+    function toggleSidebar() {
+      sidebar.classList.toggle('active');
+    }
 
-    window.logout = function() {
+    async function upgradePlan() {
+      alert("Upgrade functionality coming soon.");
+    }
+
+    function signOutUser() {
       signOut(auth).then(() => {
         window.location.href = "index.html";
-      }).catch((error) => {
-        console.error("Logout error:", error);
       });
-    };
+    }
+    window.signOut = signOutUser;
 
-    window.togglePanel = function() {
-      document.getElementById("userPanel").classList.toggle("open");
-    };
+    function updateProgressBar(used, max) {
+      const percent = Math.min((used / max) * 100, 100);
+      document.getElementById('leadProgress').style.width = percent + '%';
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById('userName').innerText = user.displayName;
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        const leadsUsed = data.leadsUsed || 0;
+        const plan = data.plan || "Free";
+
+        document.getElementById('leadsUsed').innerText = leadsUsed;
+        document.getElementById('userPlan').innerText = `Plan: ${plan}`;
+        updateProgressBar(leadsUsed, plan === "Pro" ? 25000 : 50000); // example
+      } else {
+        // Create new user doc
+        console.log("User not found in Firestore.");
+      }
+    });
   </script>
 
 </body>
