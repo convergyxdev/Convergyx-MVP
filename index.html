@@ -3,205 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CONVERGYX</title>
+  <title>Coming Soon - CONVERGYX</title>
   <style>
-    * {
+    body {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
       font-family: 'Arial', sans-serif;
-    }
-    body {
-      background-color: #f5f7fa;
-      color: #333;
-      line-height: 1.6;
-    }
-    header {
-      background: white;
-      padding: 20px 40px;
+      background-color: #f0f4f8;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    header h1 {
-      font-size: 1.8rem;
-      color: #222;
-    }
-    nav a {
-      margin-left: 20px;
-      text-decoration: none;
-      color: #007bff;
-      font-weight: bold;
-    }
-    .hero {
-      text-align: center;
-      padding: 80px 20px;
-      background: linear-gradient(to right, #edf3ff, #f9fbff);
-    }
-    .hero h2 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-    }
-    .hero p {
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto 30px;
-    }
-    .hero button {
-      padding: 15px 30px;
-      font-size: 1rem;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .section {
-      padding: 60px 20px;
-      text-align: center;
-    }
-    .features, .pricing {
-      display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 30px;
-      margin-top: 30px;
+      min-height: 100vh;
+      text-align: center;
+      color: #333;
     }
-    .box {
-      background: white;
-      border-radius: 10px;
-      padding: 30px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      flex: 1 1 250px;
-      max-width: 300px;
-    }
-    .box h3 {
-      color: #007bff;
+    h1 {
+      font-size: 2.5rem;
       margin-bottom: 10px;
     }
-    footer {
-      background: #111;
-      color: #eee;
-      text-align: center;
-      padding: 30px 10px;
+    p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 10px auto 30px;
     }
-    @media (max-width: 768px) {
-      .hero h2 {
-        font-size: 2rem;
-      }
-      .box {
-        max-width: 90%;
-      }
+    iframe {
+      width: 90%;
+      max-width: 640px;
+      height: 1000px;
+      border: none;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>CONVERGYX</h1>
-    <nav>
-      <a href="#features">Features</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#howitworks">How It Works</a>
-    </nav>
-  </header>
+  <h1>🚀 Coming Soon</h1>
+  <p>We’re working hard behind the scenes to bring something amazing your way.</p>
+  <p>In the meantime, please answer this short survey to help us serve you better. Your input truly matters!</p>
 
-  <section class="hero">
-    <h2>Find 50 Free Leads Instantly</h2>
-    <p>No credit card needed. Just click and start using your 50 free leads now.</p>
-    <button onclick="signIn()">Try It Free</button>
-  </section>
-
-  <section class="section" id="features">
-    <h2>Features</h2>
-    <div class="features">
-      <div class="box">
-        <h3>Instant Search</h3>
-        <p>Search leads by industry, role, or keywords in seconds.</p>
-      </div>
-      <div class="box">
-        <h3>Verified Data</h3>
-        <p>Receive emails, phone numbers, and company info verified and updated.</p>
-      </div>
-      <div class="box">
-        <h3>Export to CRM</h3>
-        <p>Download your leads and export to your favorite CRM with ease.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="howitworks">
-    <h2>How It Works</h2>
-    <div class="features">
-      <div class="box">
-        <h3>1. Search</h3>
-        <p>Enter keywords or industry to target the right audience.</p>
-      </div>
-      <div class="box">
-        <h3>2. View Results</h3>
-        <p>Get instant access to high-quality leads in one click.</p>
-      </div>
-      <div class="box">
-        <h3>3. Export</h3>
-        <p>Export lead data as CSV or directly into your CRM tool.</p>
-      </div>
-      <div class="box">
-        <h3>4. Upgrade</h3>
-        <p>Used up your free 50? Upgrade to unlock 15k+ verified leads monthly.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="pricing">
-    <h2>Pricing</h2>
-    <div class="pricing">
-      <div class="box">
-        <h3>$20 / month</h3>
-        <p>15,000 leads/month<br>Basic Plan</p>
-      </div>
-      <div class="box">
-        <h3>$30 / month</h3>
-        <p>25,000 leads/month<br>Pro Plan</p>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <p>&copy; 2025 CONVERGYX. All rights reserved.</p>
-  </footer>
-
-  <!-- Firebase Auth Scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBIgnKZn4rznvJimZDDJxB2rFCOxKZN4iQ",
-      authDomain: "convergyx-mvp.firebaseapp.com",
-      projectId: "convergyx-mvp",
-      storageBucket: "convergyx-mvp.firebasestorage.app",
-      messagingSenderId: "796952922966",
-      appId: "1:796952922966:web:00149d0af12559ae0724f7"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
-    window.signIn = () => {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          alert(`Welcome, ${user.displayName}!`);
-          window.location.href = "dashboard.html";
-        })
-        .catch((error) => {
-          console.error("Login failed", error);
-          alert("Login failed: " + error.message);
-        });
-    };
-  </script>
+  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScrogiFPbqHBw5jPIQ2eYL3WJzdvKdVuSsWx96tZbLR2tL2ag/viewform?embedded=true" allowfullscreen></iframe>
 
 </body>
 </html>
