@@ -1,4 +1,4 @@
-// api/export-to-hubspot.js
+// /api/export-to-hubspot.js
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,15 +6,40 @@ export default async function handler(req, res) {
   }
 
   const leads = req.body.leads || [];
+  const HUBSPOT_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN; // 🔐 Secret token from env
+
+  if (!HUBSPOT_TOKEN) {
+    return res.status(500).json({ error: 'HubSpot token missing' });
+  }
 
   try {
-    // Dummy log; replace this with your HubSpot API integration
-    console.log('Exporting leads to HubSpot:', leads.length);
+    const results = [];
 
-    // Simulate successful export
-    return res.status(200).json({ message: `Exported ${leads.length} leads to HubSpot.` });
-  } catch (err) {
-    console.error('HubSpot Export Error:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    for (const lead of leads) {
+      const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${HUBSPOT_TOKEN}`
+        },
+        body: JSON.stringify({
+          properties: {
+            email: lead.email,
+            firstname: lead.decisionMaker,
+            phone: lead.phone,
+            company: lead.company,
+            website: lead.website
+          }
+        })
+      });
+
+      const data = await response.json();
+      results.push(data);
+    }
+
+    res.status(200).json({ message: `Exported ${results.length} leads to HubSpot.` });
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ error: 'HubSpot export failed.' });
   }
 }
