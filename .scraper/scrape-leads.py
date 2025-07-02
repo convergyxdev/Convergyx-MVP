@@ -1,0 +1,31 @@
+name: Run Scraper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-scraper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11' 
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: List root directory
+        run: ls -l
+
+      - name: List scraper directory
+        run: ls -l scraper || echo "scraper folder not found"
+
+      - name: Run scraper script
+        run: python scraper/scrape-leads.py
