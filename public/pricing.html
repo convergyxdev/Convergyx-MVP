@@ -61,19 +61,6 @@
       border-top: 1px solid #eee;
     }
 
-    .subscribe-btn {
-      margin-top: 25px;
-      padding: 10px 20px;
-      font-size: 16px;
-      color: white;
-      background: #007bff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-    }
-
     .footer {
       margin-top: 60px;
       font-size: 0.9rem;
@@ -88,32 +75,74 @@
   </header>
 
   <div class="plans">
+    <!-- Starter Plan -->
     <div class="plan">
       <h2>Starter</h2>
       <div class="price">$15</div>
       <ul class="features">
-        <li>15,000 leads/month</li>
+        <li>20,000 leads/month</li>
         <li>Email & phone export</li>
         <li>CRM Integration</li>
       </ul>
-      <a href="#" class="subscribe-btn">Subscribe</a>
+      <div id="paypal-button-container-P-42R74964HL629261PNBS6PKI"></div>
     </div>
 
+    <!-- Pro Plan -->
     <div class="plan">
       <h2>Pro</h2>
       <div class="price">$20</div>
       <ul class="features">
-        <li>20,000 leads/month</li>
+        <li>30,000 additional leads/month</li>
         <li>Priority support</li>
         <li>Advanced filters</li>
       </ul>
-      <a href="#" class="subscribe-btn">Subscribe</a>
+      <div id="paypal-button-container-P-7SM19805CW160933GNBS6SLI"></div>
     </div>
   </div>
 
   <div class="footer">
     © 2025 Convergyx. All rights reserved.
   </div>
+
+  <!-- PayPal SDK + Starter Plan Script -->
+  <script src="https://www.paypal.com/sdk/js?client-id=ARckynDVvxuPZ98BK-t1QS6LLT-5U53itBfAsvC43DpSHcEperLxwtUxXmKK5v7FY9-Z5v1OnLHPyhUF&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+  <script>
+    // Starter Plan
+    paypal.Buttons({
+      style: {
+        shape: 'rect',
+        color: 'gold',
+        layout: 'vertical',
+        label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          plan_id: 'P-42R74964HL629261PNBS6PKI'
+        });
+      },
+      onApprove: function(data, actions) {
+        alert('Subscription ID: ' + data.subscriptionID);
+      }
+    }).render('#paypal-button-container-P-42R74964HL629261PNBS6PKI');
+
+    // Pro Plan
+    paypal.Buttons({
+      style: {
+        shape: 'pill',
+        color: 'white',
+        layout: 'vertical',
+        label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          plan_id: 'P-7SM19805CW160933GNBS6SLI'
+        });
+      },
+      onApprove: function(data, actions) {
+        alert('Subscription ID: ' + data.subscriptionID);
+      }
+    }).render('#paypal-button-container-P-7SM19805CW160933GNBS6SLI');
+  </script>
 
 </body>
 </html>
