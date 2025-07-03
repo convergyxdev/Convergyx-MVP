@@ -246,30 +246,33 @@
     }
 
     function populateLeads(leads) {
-      tableBody.innerHTML = '';
-      leads.forEach(lead => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${lead.company}</td>
-          <td>${lead.website}</td>
-          <td>${lead.decisionMaker}</td>
-          <td>${lead.email}</td>
-          <td>${lead.phone}</td>
-          <td>${lead.verified ? 'Yes' : 'No'}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
+  tableBody.innerHTML = '';
+  leads.forEach(lead => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${lead.company}</td>
+      <td>${lead.website}</td>
+      <td>${lead.decisionMaker}</td>
+      <td>${lead.email}</td>
+      <td>${lead.phone}</td>
+      <td>${lead.verified ? 'Yes' : 'No'}</td>
+    `;
+    tableBody.appendChild(row);
+  });
 
-    function filterLeads(query) {
-      const rows = document.querySelectorAll('#leadsTable tr');
-      rows.forEach(row => {
-        const match = Array.from(row.children).some(cell =>
-          cell.textContent.toLowerCase().includes(query.toLowerCase())
-        );
-        row.style.display = match ? '' : 'none';
-      });
-    }
+  // Attach search logic after leads are rendered
+  const searchInput = document.getElementById('leadSearch');
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#leadsTable tr');
+    rows.forEach(row => {
+      const match = [...row.children].some(cell =>
+        cell.innerText.toLowerCase().includes(query)
+      );
+      row.style.display = match ? '' : 'none';
+    });
+  });
+      }
 
     document.getElementById('leadSearch').addEventListener('input', (e) => {
       filterLeads(e.target.value);
