@@ -3,57 +3,222 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard – Convergyx</title>
+  <title>Dashboard - Convergyx</title>
   <style>
-    /* ... your existing styles here ... */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #e0fafa;
+      color: #003f3f;
+    }
+
+    header {
+      background: #00aaaa;
+      color: white;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .account-icon {
+      width: 35px;
+      height: 35px;
+      background-color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #00aaaa;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      right: -280px;
+      height: 100%;
+      width: 250px;
+      background: #b2f0f0;
+      box-shadow: -3px 0 10px rgba(0,0,0,0.1);
+      transition: right 0.3s ease;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    #sidebar.active {
+      right: 0;
+    }
+
+    .close-btn {
+      font-size: 20px;
+      float: right;
+      cursor: pointer;
+    }
+
+    #sidebar h3 {
+      margin-top: 30px;
+      font-size: 1.2rem;
+    }
+
+    .btn {
+      background: #00aaaa;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 5px;
+      width: 100%;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 15px;
+      background: #d1f9f9;
+      border-radius: 20px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: #009999;
+      width: 0%;
+    }
+
+    .search-container {
+      margin: 20px auto;
+      text-align: center;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 60%;
+      padding: 12px 40px 12px 20px;
+      font-size: 15px;
+      border: 2px solid #00cccc;
+      border-radius: 30px;
+      background: #f0fefe;
+      color: #003f3f;
+    }
+
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      right: 21%;
+      transform: translateY(-50%);
+      color: #00aaaa;
+    }
+
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #f2fafa;
+    }
+
+    th {
+      background: #00cccc;
+      color: white;
+    }
+
+    tr:hover {
+      background: #f0fafa;
+    }
+
+    #exportBtn {
+      display: block;
+      margin: 25px auto;
+      background: #009999;
+      color: white;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>CONVERGYX</h1>
-    <div class="account-icon" onclick="toggleSidebar()"></div>
+    <div class="account-icon" onclick="toggleSidebar()">👤</div>
   </header>
 
-  <!-- Sidebar panel -->
+  <!-- Sidebar -->
   <div id="sidebar">
     <span class="close-btn" onclick="toggleSidebar()">✖</span>
     <h3 id="userName">User</h3>
-    <p id="userPlan">Plan: -</p>
+    <p id="userPlan">Plan: Free</p>
     <p>Leads used: <span id="leadsUsed">0</span></p>
-    <div class="progress-container">
-      <div class="progress-bar"><div class="progress" id="leadProgress"></div></div>
+    <div class="progress-bar">
+      <div class="progress" id="leadProgress"></div>
     </div>
     <button class="btn" onclick="signOut()">Sign Out</button>
   </div>
 
-  <!-- Search bar -->
+  <!-- Search -->
   <div class="search-container">
-    <input type="text" id="leadSearch" placeholder="🔍 Search leads by company, industry, role, etc..." />
-    <span class="search-icon">🔎</span>
+    <input type="text" id="leadSearch" placeholder="Search leads by name, industry, etc..." />
+    <span class="search-icon">🔍</span>
   </div>
 
-  <!-- Leads Table -->
+  <!-- Table -->
   <table>
-    <thead><tr>
-      <th>Company</th><th>Website</th><th>Decision Maker</th><th>Email</th><th>Phone</th><th>Verified</th>
-    </tr></thead>
-    <tbody id="leadsTable"></tbody>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Website</th>
+        <th>Decision Maker</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Verified</th>
+      </tr>
+    </thead>
+    <tbody id="leadsTable">
+      <!-- JS Populated Rows -->
+    </tbody>
   </table>
 
-  <!-- Export Button -->
-  <button class="btn" id="exportBtn">Export to HubSpot</button>
+  <button class="btn" id="exportBtn">Export to Hubspot</button>
 
+  <!-- Firebase + JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSy…", /* truncated */
+      apiKey: "AIzaSyBIgnKZn4rznvJimZDDJxB2rFCOxKZN4iQ",
       authDomain: "convergyx-mvp.firebaseapp.com",
-      projectId: "convergyx-mvp", storageBucket: "convergyx-mvp.appspot.com",
-      messagingSenderId: "796952922966", appId: "1:796952922966:web:…"
+      projectId: "convergyx-mvp",
+      storageBucket: "convergyx-mvp.appspot.com",
+      messagingSenderId: "796952922966",
+      appId: "1:796952922966:web:00149d0af12559ae0724f7"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -67,17 +232,20 @@
       sidebar.classList.toggle('active');
     }
 
-    window.signOut = () => {
-      signOut(auth).then(() => window.location.href = "index.html");
-    };
+    function signOutUser() {
+      signOut(auth).then(() => {
+        window.location.href = "index.html";
+      });
+    }
+    window.signOut = signOutUser;
 
     function updateProgressBar(used, max) {
-      document.getElementById('leadProgress').style.width =
-        Math.min((used / max) * 100, 100) + '%';
+      const percent = Math.min((used / max) * 100, 100);
+      document.getElementById('leadProgress').style.width = percent + '%';
     }
 
     function populateLeads(leads) {
-      tableBody.innerHTML = "";
+      tableBody.innerHTML = '';
       leads.forEach(lead => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -92,50 +260,78 @@
       });
     }
 
-    document.getElementById('leadSearch').addEventListener('input', e => {
-      const q = e.target.value.toLowerCase();
-      document.querySelectorAll('#leadsTable tr').forEach(r => {
-        const text = [...r.cells].map(c => c.innerText.toLowerCase()).join(' ');
-        r.style.display = text.includes(q) ? '' : 'none';
+    function filterLeads(query) {
+      const rows = tableBody.querySelectorAll('tr');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
       });
+    }
+
+    document.getElementById('leadSearch').addEventListener('input', (e) => {
+      filterLeads(e.target.value);
     });
 
-    onAuthStateChanged(auth, async user => {
-      if (!user) return window.location.href = "auth.html";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "auth.html";
+        return;
+      }
 
-      document.getElementById('userName').innerText = user.displayName;
+      document.getElementById('userName').innerText = user.displayName || "User";
 
-      const ud = await getDoc(doc(db, "users", user.uid));
-      const data = ud.exists() ? ud.data() : {plan: "Free", leadsUsed: 0};
-      document.getElementById('userPlan').innerText = `Plan: ${data.plan}`;
-      document.getElementById('leadsUsed').innerText = data.leadsUsed;
-      updateProgressBar(data.leadsUsed, data.plan==="Pro" ? 30000 : 20000);
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        const leadsUsed = data.leadsUsed || 0;
+        const plan = data.plan || "Free";
 
-      // Load saved leads
-      const snap = await getDocs(collection(db, "users", user.uid, "leads"));
-      populateLeads(snap.docs.map(d => d.data()));
+        document.getElementById('leadsUsed').innerText = leadsUsed;
+        document.getElementById('userPlan').innerText = `Plan: ${plan}`;
+        updateProgressBar(leadsUsed, plan === "Pro" ? 25000 : 50000);
+      }
+
+      const leadsRef = collection(db, "users", user.uid, "leads");
+      const leadsSnap = await getDocs(leadsRef);
+      const leads = leadsSnap.docs.map(doc => doc.data());
+      populateLeads(leads);
     });
 
     document.getElementById('exportBtn').addEventListener('click', async () => {
       const rows = document.querySelectorAll('#leadsTable tr');
-      const leads = [...rows].map(r => {
-        const c = r.cells;
-        return { company: c[0].innerText, website: c[1].innerText, decisionMaker: c[2].innerText,
-                 email: c[3].innerText, phone: c[4].innerText, verified: c[5].innerText === 'Yes' };
+      const leads = [];
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 6) {
+          leads.push({
+            company: cells[0].innerText,
+            website: cells[1].innerText,
+            decisionMaker: cells[2].innerText,
+            email: cells[3].innerText,
+            phone: cells[4].innerText,
+            verified: cells[5].innerText.toLowerCase() === 'yes'
+          });
+        }
       });
-      if (!leads.length) return alert("No leads to export.");
+
+      if (leads.length === 0) {
+        alert("No leads to export.");
+        return;
+      }
 
       try {
-        const res = await fetch('/api/export-to-hubspot', {
+        const response = await fetch('/api/export-to-hubspot', {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ leads })
         });
-        const json = await res.json();
-        alert(res.ok ? `Exported ${json.results.length} leads!` : `Error: ${json.error}`);
-      } catch(e) {
-        console.error(e);
-        alert("Export error – check console.");
+
+        const result = await response.json();
+        alert(response.ok ? "Export successful!" : "Export failed: " + (result.error || "Unknown error."));
+      } catch (err) {
+        alert("Export error. See console.");
+        console.error(err);
       }
     });
   </script>
