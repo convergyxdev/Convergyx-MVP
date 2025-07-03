@@ -112,11 +112,10 @@
     .search-icon {
       position: absolute;
       top: 50%;
-      right: 24%;
+      right: 23%;
       transform: translateY(-50%);
       font-size: 18px;
       color: #007f7f;
-      cursor: pointer;
     }
 
     table {
@@ -174,8 +173,8 @@
 
   <!-- Search -->
   <div class="search-container">
-    <input type="text" id="leadSearch" placeholder="Search leads by company, industry, role, etc..." />
-    <span class="search-icon" onclick="focusSearch()">🔍</span>
+    <input type="text" id="leadSearch" placeholder="🔍 Search leads..." />
+    <span class="search-icon">🔎</span>
   </div>
 
   <!-- Leads Table -->
@@ -197,7 +196,7 @@
 
   <button class="btn" id="exportBtn">Export to Hubspot</button>
 
-  <!-- Firebase + Logic -->
+  <!-- Firebase + Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import {
@@ -228,20 +227,18 @@
 
     const sidebar = document.getElementById('sidebar');
     const tableBody = document.getElementById('leadsTable');
+    const searchInput = document.getElementById('leadSearch');
 
-    window.toggleSidebar = function() {
+    function toggleSidebar() {
       sidebar.classList.toggle('active');
     }
 
-    window.signOut = function() {
+    function signOutUser() {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     }
-
-    window.focusSearch = function() {
-      document.getElementById('leadSearch').focus();
-    }
+    window.signOut = signOutUser;
 
     function updateProgressBar(used, max) {
       const percent = Math.min((used / max) * 100, 100);
@@ -274,8 +271,16 @@
       });
     }
 
-    document.getElementById('leadSearch').addEventListener('input', (e) => {
+    // Search on input
+    searchInput.addEventListener('input', (e) => {
       filterLeads(e.target.value);
+    });
+
+    // Trigger search on "Enter"
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        filterLeads(searchInput.value);
+      }
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -297,6 +302,7 @@
         updateProgressBar(leadsUsed, plan === "Pro" ? 25000 : 50000);
       }
 
+      // Load scraped leads
       const leadsRef = collection(db, "users", user.uid, "leads");
       const leadsSnap = await getDocs(leadsRef);
       const leads = leadsSnap.docs.map(doc => doc.data());
