@@ -1,3 +1,4 @@
+<!-- ✅ You can save this as dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,51 +7,46 @@
   <title>Dashboard - Convergyx</title>
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #e0fafa;
-      color: #003f3f;
+      margin: 0;
+      background: #e0f7f7;
+      color: #003d3d;
     }
 
     header {
-      background: #00aaaa;
+      background: #007f7f;
       color: white;
-      padding: 15px 25px;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     header h1 {
+      font-size: 1.6rem;
       margin: 0;
-      font-size: 1.4rem;
     }
 
     .account-icon {
       width: 35px;
       height: 35px;
-      background-color: white;
       border-radius: 50%;
+      background: #00b3b3;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #00aaaa;
     }
 
-    /* Sidebar */
     #sidebar {
       position: fixed;
       top: 0;
       right: -280px;
-      height: 100%;
       width: 250px;
-      background: #b2f0f0;
-      box-shadow: -3px 0 10px rgba(0,0,0,0.1);
+      height: 100%;
+      background: #ccf2f2;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.15);
+      padding: 20px;
       transition: right 0.3s ease;
       z-index: 1000;
-      padding: 20px;
     }
 
     #sidebar.active {
@@ -58,9 +54,9 @@
     }
 
     .close-btn {
-      font-size: 20px;
       float: right;
       cursor: pointer;
+      font-size: 22px;
     }
 
     #sidebar h3 {
@@ -69,7 +65,7 @@
     }
 
     .btn {
-      background: #00aaaa;
+      background: #00b3b3;
       color: white;
       border: none;
       padding: 10px 20px;
@@ -80,43 +76,46 @@
       cursor: pointer;
     }
 
+    .progress-container {
+      margin-top: 15px;
+    }
+
     .progress-bar {
-      width: 100%;
-      height: 15px;
-      background: #d1f9f9;
-      border-radius: 20px;
-      margin-top: 10px;
+      height: 18px;
+      background: #b2dfdf;
+      border-radius: 10px;
       overflow: hidden;
     }
 
     .progress {
       height: 100%;
-      background: #009999;
+      background: #007f7f;
       width: 0%;
     }
 
     .search-container {
-      margin: 20px auto;
       text-align: center;
+      margin: 30px 0 15px;
       position: relative;
     }
 
     .search-container input {
-      width: 60%;
-      padding: 12px 40px 12px 20px;
-      font-size: 15px;
+      width: 55%;
+      padding: 12px 45px 12px 15px;
+      font-size: 16px;
       border: 2px solid #00cccc;
       border-radius: 30px;
-      background: #f0fefe;
-      color: #003f3f;
+      background-color: #f4ffff;
+      color: #004d4d;
     }
 
     .search-icon {
       position: absolute;
       top: 50%;
-      right: 21%;
+      right: 23%;
       transform: translateY(-50%);
-      color: #00aaaa;
+      font-size: 18px;
+      color: #007f7f;
     }
 
     table {
@@ -124,15 +123,15 @@
       margin: 20px auto;
       border-collapse: collapse;
       background: #ffffff;
-      border-radius: 6px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+      border-radius: 5px;
       overflow: hidden;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
 
     th, td {
       padding: 12px 15px;
+      border-bottom: 1px solid #e6f7f7;
       text-align: left;
-      border-bottom: 1px solid #f2fafa;
     }
 
     th {
@@ -141,14 +140,13 @@
     }
 
     tr:hover {
-      background: #f0fafa;
+      background: #f0ffff;
     }
 
     #exportBtn {
-      display: block;
-      margin: 25px auto;
       background: #009999;
-      color: white;
+      margin: 20px auto;
+      display: block;
     }
   </style>
 </head>
@@ -156,28 +154,30 @@
 
   <header>
     <h1>CONVERGYX</h1>
-    <div class="account-icon" onclick="toggleSidebar()">👤</div>
+    <div class="account-icon" onclick="toggleSidebar()"></div>
   </header>
 
   <!-- Sidebar -->
   <div id="sidebar">
     <span class="close-btn" onclick="toggleSidebar()">✖</span>
     <h3 id="userName">User</h3>
-    <p id="userPlan">Plan: Free</p>
+    <p id="userPlan">Plan: -</p>
     <p>Leads used: <span id="leadsUsed">0</span></p>
-    <div class="progress-bar">
-      <div class="progress" id="leadProgress"></div>
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress" id="leadProgress"></div>
+      </div>
     </div>
-    <button class="btn" onclick="signOut()">Sign Out</button>
+    <button class="btn" onclick="signOutUser()">Sign Out</button>
   </div>
 
   <!-- Search -->
   <div class="search-container">
-    <input type="text" id="leadSearch" placeholder="Search leads by name, industry, etc..." />
-    <span class="search-icon">🔍</span>
+    <input type="text" id="leadSearch" placeholder="🔍 Search leads by company, industry, role, etc..." />
+    <span class="search-icon">🔎</span>
   </div>
 
-  <!-- Table -->
+  <!-- Leads Table -->
   <table>
     <thead>
       <tr>
@@ -189,14 +189,12 @@
         <th>Verified</th>
       </tr>
     </thead>
-    <tbody id="leadsTable">
-      <!-- JS Populated Rows -->
-    </tbody>
+    <tbody id="leadsTable"></tbody>
   </table>
 
   <button class="btn" id="exportBtn">Export to Hubspot</button>
 
-  <!-- Firebase + JS -->
+  <!-- Firebase Scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import {
@@ -225,19 +223,15 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const sidebar = document.getElementById('sidebar');
     const tableBody = document.getElementById('leadsTable');
 
     function toggleSidebar() {
-      sidebar.classList.toggle('active');
+      document.getElementById('sidebar').classList.toggle('active');
     }
 
     function signOutUser() {
-      signOut(auth).then(() => {
-        window.location.href = "index.html";
-      });
+      signOut(auth).then(() => window.location.href = "index.html");
     }
-    window.signOut = signOutUser;
 
     function updateProgressBar(used, max) {
       const percent = Math.min((used / max) * 100, 100);
@@ -261,10 +255,12 @@
     }
 
     function filterLeads(query) {
-      const rows = tableBody.querySelectorAll('tr');
+      const rows = document.querySelectorAll('#leadsTable tr');
       rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(query.toLowerCase()) ? '' : 'none';
+        const match = [...row.children].some(cell =>
+          cell.innerText.toLowerCase().includes(query.toLowerCase())
+        );
+        row.style.display = match ? '' : 'none';
       });
     }
 
@@ -328,7 +324,7 @@
         });
 
         const result = await response.json();
-        alert(response.ok ? "Export successful!" : "Export failed: " + (result.error || "Unknown error."));
+        alert(response.ok ? `Export successful! ${result.message || ''}` : "Export failed: " + (result.error || "Unknown error."));
       } catch (err) {
         alert("Export error. See console.");
         console.error(err);
