@@ -264,8 +264,8 @@
     function filterLeads(query) {
       const rows = document.querySelectorAll('#leadsTable tr');
       rows.forEach(row => {
-        const match = [...row.children].some(cell =>
-          cell.innerText.toLowerCase().includes(query.toLowerCase())
+        const match = Array.from(row.children).some(cell =>
+          cell.textContent.toLowerCase().includes(query.toLowerCase())
         );
         row.style.display = match ? '' : 'none';
       });
@@ -294,7 +294,6 @@
         updateProgressBar(leadsUsed, plan === "Pro" ? 25000 : 50000);
       }
 
-      // Load scraped leads (optional Firestore collection per user)
       const leadsRef = collection(db, "users", user.uid, "leads");
       const leadsSnap = await getDocs(leadsRef);
       const leads = leadsSnap.docs.map(doc => doc.data());
