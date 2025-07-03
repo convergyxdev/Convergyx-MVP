@@ -116,6 +116,7 @@
       transform: translateY(-50%);
       font-size: 18px;
       color: #007f7f;
+      cursor: pointer;
     }
 
     table {
@@ -145,7 +146,7 @@
 
     #exportBtn {
       background: #009999;
-      margin: 30px auto 40px;
+      margin: 20px auto;
       display: block;
     }
   </style>
@@ -173,8 +174,8 @@
 
   <!-- Search -->
   <div class="search-container">
-    <input type="text" id="leadSearch" placeholder="🔍 Search leads by company, industry, role, etc..." />
-    <span class="search-icon">🔎</span>
+    <input type="text" id="leadSearch" placeholder="Search leads by company, industry, role, etc..." />
+    <span class="search-icon" onclick="focusSearch()">🔍</span>
   </div>
 
   <!-- Leads Table -->
@@ -190,13 +191,13 @@
       </tr>
     </thead>
     <tbody id="leadsTable">
-      <!-- Leads go here -->
+      <!-- Leads will be added here -->
     </tbody>
   </table>
 
   <button class="btn" id="exportBtn">Export to Hubspot</button>
 
-  <!-- Firebase -->
+  <!-- Firebase + Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import {
@@ -225,28 +226,29 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const tableBody = document.getElementById('leadsTable');
+
     window.toggleSidebar = function() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("active");
+      sidebar.classList.toggle('active');
     }
 
-    // Sign out
-    window.signOut = function () {
+    window.signOut = function() {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
-    };
+    }
 
-    // Update progress bar
+    window.focusSearch = function() {
+      document.getElementById('leadSearch').focus();
+    }
+
     function updateProgressBar(used, max) {
       const percent = Math.min((used / max) * 100, 100);
       document.getElementById('leadProgress').style.width = percent + '%';
     }
 
-    // Populate leads in table
     function populateLeads(leads) {
-      const tableBody = document.getElementById('leadsTable');
       tableBody.innerHTML = '';
       leads.forEach(lead => {
         const row = document.createElement('tr');
@@ -262,19 +264,20 @@
       });
     }
 
-    // Filter table
-    document.getElementById('leadSearch').addEventListener('input', (e) => {
-      const search = e.target.value.toLowerCase();
+    function filterLeads(query) {
       const rows = document.querySelectorAll('#leadsTable tr');
       rows.forEach(row => {
-        const match = Array.from(row.cells).some(cell =>
-          cell.textContent.toLowerCase().includes(search)
+        const match = [...row.children].some(cell =>
+          cell.innerText.toLowerCase().includes(query.toLowerCase())
         );
         row.style.display = match ? '' : 'none';
       });
+    }
+
+    document.getElementById('leadSearch').addEventListener('input', (e) => {
+      filterLeads(e.target.value);
     });
 
-    // Auth check and lead load
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "auth.html";
@@ -300,7 +303,6 @@
       populateLeads(leads);
     });
 
-    // Export
     document.getElementById('exportBtn').addEventListener('click', async () => {
       const rows = document.querySelectorAll('#leadsTable tr');
       const leads = [];
