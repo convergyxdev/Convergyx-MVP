@@ -341,6 +341,157 @@
         console.error(err);
       }
     });
-  </script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    collection,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBIgnKZn4rznvJimZDDJxB2rFCOxKZN4iQ",
+    authDomain: "convergyx-mvp.firebaseapp.com",
+    projectId: "convergyx-mvp",
+    storageBucket: "convergyx-mvp.appspot.com",
+    messagingSenderId: "796952922966",
+    appId: "1:796952922966:web:00149d0af12559ae0724f7"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const sidebar = document.getElementById('sidebar');
+  const tableBody = document.getElementById('leadsTable');
+  const searchInput = document.getElementById('leadSearch');
+
+  // Make toggleSidebar global
+  window.toggleSidebar = function () {
+    sidebar.classList.toggle('active');
+  };
+
+  // Sign out button
+  window.signOut = function () {
+    signOut(auth).then(() => {
+      window.location.href = "index.html";
+    });
+  };
+
+  // Update progress bar
+  function updateProgressBar(used, max) {
+    const percent = Math.min((used / max) * 100, 100);
+    document.getElementById('leadProgress').style.width = percent + '%';
+  }
+
+  // Load and populate leads
+  function populateLeads(leads) {
+    tableBody.innerHTML = '';
+    leads.forEach(lead => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${lead.company}</td>
+        <td>${lead.website}</td>
+        <td>${lead.decisionMaker}</td>
+        <td>${lead.email}</td>
+        <td>${lead.phone}</td>
+        <td>${lead.verified ? 'Yes' : 'No'}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  // Filtering search
+  function filterLeads(query) {
+    const rows = document.querySelectorAll('#leadsTable tr');
+    rows.forEach(row => {
+      const match = [...row.children].some(cell =>
+        cell.innerText.toLowerCase().includes(query.toLowerCase())
+      );
+      row.style.display = match ? '' : 'none';
+    });
+  }
+
+  // Search input listener
+  searchInput.addEventListener('input', (e) => {
+    filterLeads(e.target.value);
+  });
+
+  // Auth & Fetch Data
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "auth.html";
+      return;
+    }
+
+    document.getElementById('userName').innerText = user.displayName || "User";
+
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      const leadsUsed = data.leadsUsed || 0;
+      const plan = data.plan || "Free";
+
+      document.getElementById('leadsUsed').innerText = leadsUsed;
+      document.getElementById('userPlan').innerText = `Plan: ${plan}`;
+      updateProgressBar(leadsUsed, plan === "Pro" ? 25000 : 50000);
+    }
+
+    const leadsRef = collection(db, "users", user.uid, "leads");
+    const leadsSnap = await getDocs(leadsRef);
+    const leads = leadsSnap.docs.map(doc => doc.data());
+    populateLeads(leads);
+  });
+
+  // Export button
+  document.getElementById('exportBtn').addEventListener('click', async () => {
+    const rows = document.querySelectorAll('#leadsTable tr');
+    const leads = [];
+
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if (cells.length === 6) {
+        leads.push({
+          company: cells[0].innerText,
+          website: cells[1].innerText,
+          decisionMaker: cells[2].innerText,
+          email: cells[3].innerText,
+          phone: cells[4].innerText,
+          verified: cells[5].innerText.toLowerCase() === 'yes'
+        });
+      }
+    });
+
+    if (leads.length === 0) {
+      alert("No leads to export.");
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/export-to-hubspot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leads })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(`Export successful! ${result.message || ''}`);
+      } else {
+        alert("Export failed: " + (result.error || "Unknown error."));
+      }
+    } catch (err) {
+      alert("Export error. See console.");
+      console.error(err);
+    }
+  });
+  
 </body>
 </html>
