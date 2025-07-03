@@ -35,6 +35,7 @@
       cursor: pointer;
     }
 
+    /* Sidebar panel */
     #sidebar {
       position: fixed;
       top: 0;
@@ -154,12 +155,12 @@
 
   <header>
     <h1>CONVERGYX</h1>
-    <div class="account-icon" onclick="toggleSidebar()"></div>
+    <div class="account-icon" id="accountIcon"></div>
   </header>
 
   <!-- Sidebar -->
   <div id="sidebar">
-    <span class="close-btn" onclick="toggleSidebar()">✖</span>
+    <span class="close-btn" id="closeSidebar">✖</span>
     <h3 id="userName">User</h3>
     <p id="userPlan">Plan: -</p>
     <p>Leads used: <span id="leadsUsed">0</span></p>
@@ -168,7 +169,7 @@
         <div class="progress" id="leadProgress"></div>
       </div>
     </div>
-    <button class="btn" onclick="signOut()">Sign Out</button>
+    <button class="btn" onclick="signOutUser()">Sign Out</button>
   </div>
 
   <!-- Search -->
@@ -227,18 +228,21 @@
 
     const sidebar = document.getElementById('sidebar');
     const tableBody = document.getElementById('leadsTable');
-    const searchInput = document.getElementById('leadSearch');
 
-    function toggleSidebar() {
-      sidebar.classList.toggle('active');
-    }
+    document.getElementById("accountIcon").addEventListener("click", () => {
+      sidebar.classList.add("active");
+    });
+
+    document.getElementById("closeSidebar").addEventListener("click", () => {
+      sidebar.classList.remove("active");
+    });
 
     function signOutUser() {
       signOut(auth).then(() => {
         window.location.href = "index.html";
       });
     }
-    window.signOut = signOutUser;
+    window.signOutUser = signOutUser;
 
     function updateProgressBar(used, max) {
       const percent = Math.min((used / max) * 100, 100);
@@ -271,16 +275,8 @@
       });
     }
 
-    // Search on input
-    searchInput.addEventListener('input', (e) => {
+    document.getElementById('leadSearch').addEventListener('input', (e) => {
       filterLeads(e.target.value);
-    });
-
-    // Trigger search on "Enter"
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        filterLeads(searchInput.value);
-      }
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -302,7 +298,6 @@
         updateProgressBar(leadsUsed, plan === "Pro" ? 25000 : 50000);
       }
 
-      // Load scraped leads
       const leadsRef = collection(db, "users", user.uid, "leads");
       const leadsSnap = await getDocs(leadsRef);
       const leads = leadsSnap.docs.map(doc => doc.data());
